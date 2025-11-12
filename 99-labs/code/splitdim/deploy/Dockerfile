@@ -1,28 +1,25 @@
-# Start from the official Golang image
+# Builder stage
 FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Copy go.mod and go.sum files
+# Másold a go.mod, go.sum és a vendor könyvtárat
 COPY go.mod go.sum ./
-RUN go mod download
+COPY vendor ./vendor
 
-# Copy the source code
+# Másold a forráskódot
 COPY . .
 
-# Build the Go app
-RUN go build -o /splitdim main.go
+# Build a binary using vendor
+RUN go build -mod=vendor -o /splitdim main.go
 
-# Use a minimal base image for runtime
+# Minimal runtime image
 FROM alpine:latest
-
 WORKDIR /root/
 
-# Copy the binary from the builder stage
+# Copy binary and static files
 COPY --from=builder /splitdim .
-
-# Copy static files (for GUI)
 COPY --from=builder /app/static ./static
 
-# Run the binary
+# Entrypoint
 ENTRYPOINT ["./splitdim"]
