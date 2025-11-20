@@ -141,3 +141,14 @@ func (db *localDB) Reset() error {
 
     return nil
 }
+// SetBalance updates the balance of a user by amount (can be negative)
+func (db *localDB) SetBalance(user string, amount int) error {
+    db.mu.Lock()
+    defer db.mu.Unlock()
+
+    if _, ok := db.accounts[user]; !ok {
+        db.accounts[user] = 0
+    }
+    db.accounts[user] += amount
+    return nil
+}

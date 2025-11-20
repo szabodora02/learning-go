@@ -17,7 +17,9 @@ func (d *dummyDB) Transfer(t api.Transfer) error       { return nil }
 func (d *dummyDB) AccountList() ([]api.Account, error) { return []api.Account{}, nil }
 func (d *dummyDB) Clear() ([]api.Transfer, error)      { return []api.Transfer{}, nil }
 func (d *dummyDB) Reset() error                        { return nil }
-
+func (d *dummyDB) SetBalance(user string, amount int) error {
+        return nil
+}
 // TestAPI will simply create the API structs and JSON encode/decode each.
 func TestAPI(t *testing.T) {
 	// this will fail at compile time if something is wrong

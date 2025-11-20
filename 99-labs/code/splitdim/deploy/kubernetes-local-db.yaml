@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: splitdim
+  labels:
+    app: splitdim
 spec:
   replicas: 1
   selector:
@@ -13,21 +15,19 @@ spec:
         app: splitdim
     spec:
       containers:
-        - name: splitdim
-          image: splitdim:local
-          imagePullPolicy: Never
-          ports:
-            - containerPort: 8080
+      - name: splitdim
+        image: localhost/splitdim
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: splitdim
 spec:
-  type: LoadBalancer
   selector:
     app: splitdim
+  type: LoadBalancer
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

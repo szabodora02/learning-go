@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: splitdim
+spec:
+  type: LoadBalancer
+  selector:
+    app: splitdim
+  ports:
+    - protocol: TCP
+      port: 80          # this is the external port expected by the lab tests
+      targetPort: 8080  # matches the server in main.go

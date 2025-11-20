@@ -1,0 +1,11 @@
+FROM golang:1.24-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+COPY vendor ./vendor
+COPY pkg/db/kvstore ./kvstore
+RUN go build -o /kvstore ./kvstore/main.go   # vagy a kvstore fő binárisod elérési útja
+
+FROM alpine:latest
+WORKDIR /root/
+COPY --from=builder /kvstore .
+ENTRYPOINT ["./kvstore"]

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: splitdim           # rename Deployment
+  labels:
+    app: splitdim          # must match Service selector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: splitdim        # must match template labels
+  template:
+    metadata:
+      labels:
+        app: splitdim      # must match selector
+    spec:
+      containers:
+      - name: splitdim
+        image: szabodora237/splitdim:latest
+        ports:
+        - containerPort: 8080
