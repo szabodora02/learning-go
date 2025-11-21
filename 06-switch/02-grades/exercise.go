@@ -5,5 +5,18 @@ package grades
 
 // gradeExam returns the grade of an exam with the given percentage
 func gradeExam(percent float32) int {
-	// INSERT YOUR CODE HERE
+	// Fentről lefelé haladunk. Az első "igaz" találatnál kilép a switch.
+	switch {
+	case percent >= 90:
+		return 5
+	case percent >= 75:
+		return 4
+	case percent >= 50:
+		return 3
+	case percent >= 30:
+		return 2
+	default:
+		// Minden ami 30 alatt van
+		return 1
+	}
 }

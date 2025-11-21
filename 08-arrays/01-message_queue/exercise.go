@@ -5,5 +5,6 @@ package messagequeue
 
 // messagequeue returns the an array constructed from the arguments
 func messageQueue(a, b, c string) [3]string {
-	// INSERT YOUR CODE HERE
+	// Tömb létrehozása literállal (direkt megadjuk az elemeket a kért sorrendben)
+	return [3]string{a, c, b}
 }
