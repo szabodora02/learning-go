@@ -16,17 +16,24 @@ spec:
     spec:
       containers:
       - name: splitdim
-        # Itt hagytam a te image nevedet, de ne felejtsd el frissíteni (push)!
-        image: szabodora237/splitdim:latest 
-        imagePullPolicy: Never  # Ez segít, hogy biztosan az új verziót töltse le
+        image: szabodora237/splitdim:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8080
         env:
         - name: KVSTORE_MODE
-          value: "resilientkvstore"  # <--- ÁTÍRVA: "local" helyett "resilientkvstore"
+          valueFrom:
+            configMapKeyRef:
+              name: splitdim-config
+              key: kvstoreMode
+              optional: true
         - name: KVSTORE_ADDR
-          value: "kvstore:8081"        # <--- HOZZÁADVA: Meg kell mondani, hol a db
-        resources:                   # <--- HOZZÁADVA: Biztonsági limit a retry teszthez
+          valueFrom:
+            configMapKeyRef:
+              name: splitdim-config
+              key: kvstoreAddr
+              optional: true
+        resources:
           requests:
             cpu: "100m"
           limits:

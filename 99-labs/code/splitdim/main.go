@@ -15,14 +15,14 @@ import (
 	"splitdim/pkg/api"
 	"splitdim/pkg/db/kvstore"
 	"splitdim/pkg/db/local"
-	// "splitdim/pkg/db/resilientkvstore" <-- EZT TÖRÖLTEM KI
+	"splitdim/pkg/db/resilientkvstore"
 )
 
 // KVStoreMode defines the data layer mode (local/redis/kvstore).
-var KVStoreMode = "local"
+var KVStoreMode string
 
 // KVStoreAddr stores the key-value store address as a DNS domain name or IP address.
-var KVStoreAddr = "localhost:8001"
+var KVStoreAddr string
 
 var db api.DataLayer
 
@@ -123,27 +123,31 @@ func main() {
 	// Set the default logger to a fancier log format.
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	if os.Getenv("KVSTORE_MODE") != "" {
-		KVStoreMode = os.Getenv("KVSTORE_MODE")
-	}
-	if os.Getenv("KVSTORE_ADDR") != "" {
-		KVStoreAddr = os.Getenv("KVSTORE_ADDR")
+	// Determine defaults based on ENV vars or hardcoded fallbacks
+	defaultMode := os.Getenv("KVSTORE_MODE")
+	if defaultMode == "" {
+		defaultMode = "local"
 	}
 
-	flag.StringVar(&KVStoreMode, "mode", "local", "Data layer mode (local/kvstore/resilientkvstore)")
-	if KVStoreMode == "resilientkvstore" || KVStoreMode == "kvstore" {
-		// Set the default address to the resilientkvstore.
-		flag.StringVar(&KVStoreAddr, "addr", "localhost:8001", "Key-value store address")
+	defaultAddr := os.Getenv("KVSTORE_ADDR")
+	if defaultAddr == "" {
+		defaultAddr = "localhost:8081"
 	}
+
+	// Define flags using the calculated defaults
+	flag.StringVar(&KVStoreMode, "mode", defaultMode, "Data layer mode (local/kvstore/resilientkvstore)")
+	flag.StringVar(&KVStoreAddr, "addr", defaultAddr, "Key-value store address")
+
+	// IMPORTANT: Parse the flags!
+	flag.Parse()
 
 	switch KVStoreMode {
 	case "kvstore":
 		log.Printf("Using the kvstore datalayer using at %q", KVStoreAddr)
 		db = kvstore.NewDataLayer(KVStoreAddr)
 	case "resilientkvstore":
-		// MÓDOSÍTVA: Itt is a sima kvstore-t hívjuk, mert abba raktuk a logikát!
-		log.Printf("Using the resilientkvstore datalayer (mapped to kvstore) at %q", KVStoreAddr)
-		db = kvstore.NewDataLayer(KVStoreAddr)
+		log.Printf("Using the resilientkvstore datalayer using at %q", KVStoreAddr)
+		db = resilientkvstore.NewDataLayer(KVStoreAddr)
 	case "local":
 		fallthrough
 	default:
